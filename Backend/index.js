@@ -9,7 +9,7 @@ import FileUpload from 'express-fileupload';
 
 import UserRoute from './routes/UserRoute.js';
 import AuthRoute from './routes/AuthRoute.js';
-
+// require('dotenv').config({ path: '/custom/path/to/.env'})
 const app = express();
 
 const sessionStore = SequelizeStore(session.Store);
@@ -36,7 +36,7 @@ app.use(session({
 
 app.use(cors ({
     credentials: true,
-    origin: 'http://localhost:5173'
+    origin: process.env.CLIENT_ORIGIN
 }));
 
 
@@ -51,5 +51,5 @@ app.use(AuthRoute);
 // store.sync();
 
 app.listen(process.env.APP_PORT, () => {
-    console.log('Server up and running...');
+    console.log('Server up and running...'+ process.env.APP_PORT);
 });

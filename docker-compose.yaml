@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: esm-frontend-container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+
+  backend:
+    build: ./backend
+    container_name: esm-backend-container
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - DB_PORT=$DB_PORT
+      - CLIENT_ORIGIN=$CLIENT_ORIGIN
+    networks:
+      - backend
+      - frontend
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  mysqldb:
+    image: mysql:latest
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+      - MYSQL_DATABASE=$DB_NAME
+    ports:
+      - "$DB_PORT:$DB_PORT"
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db:
